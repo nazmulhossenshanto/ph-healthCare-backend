@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import config from "./config/config";
 import { prisma } from "./lib/prisma";
 import { userRoutes } from "./modules/user/user.routes";
+import { authRoutes } from "./modules/auth/auth.routes";
 
 const app: Application = express();
 
@@ -22,7 +23,8 @@ app.use(cookieParser());
 
 
 // create user api
-app.use('/api/users', userRoutes)
+app.use('/api/users', userRoutes);
+app.use('/api/users', authRoutes)
 
 
 
