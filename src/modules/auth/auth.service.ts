@@ -17,9 +17,9 @@ const loginUserIntoDB = async (payload: ILoginUser) => {
   if (!isPasswordMatched) {
     throw new Error("Invalid password or credentials!");
   }
-   if (user.activeStatus === "BLOCKED") {
-     throw new Error("User is blocked! Please contact to the support.");
-   }
+  if (user.activeStatus === "BLOCKED") {
+    throw new Error("User is blocked! Please contact to the support.");
+  }
   const jwtPayload = {
     id: user.id,
     name: user.name,
@@ -37,11 +37,43 @@ const loginUserIntoDB = async (payload: ILoginUser) => {
     config.jwt_refresh_expires_in as SignOptions,
   );
 
-  return {  accessToken, refreshToken };
+  return { accessToken, refreshToken };
 };
 
- 
+const refreshToken = async (refreshToken: string) => {
+  const verifiedRefreshToken = jwtUtils.verifyToken(
+    refreshToken,
+    config.jwt_refresh_secret,
+  );
+  if (!verifiedRefreshToken.success) {
+    throw new Error(verifiedRefreshToken.error);
+  }
+  console.log("decoded", verifiedRefreshToken);
+  const { id } = verifiedRefreshToken.data as JwtPayload;
+  const user = await prisma.user.findUniqueOrThrow({
+    where: {
+      id,
+    },
+  });
+  if (user.activeStatus === "BLOCKED") {
+    throw new Error("User is blocked! Please contact to the support.");
+  }
+  const jwtPayload = {
+    id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
+
+  const accessToken = jwtUtils.createToken(
+    jwtPayload,
+    config.jwt_access_secret,
+    config.jwt_access_expires_in as SignOptions,
+  );
+  return { accessToken };
+};
 
 export const authService = {
   loginUserIntoDB,
+  refreshToken,
 };

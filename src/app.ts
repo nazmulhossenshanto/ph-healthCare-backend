@@ -24,7 +24,7 @@ app.use(cookieParser());
 
 // create user api
 app.use('/api/users', userRoutes);
-app.use('/api/users', authRoutes)
+app.use('/api/auth', authRoutes)
 
 
 
