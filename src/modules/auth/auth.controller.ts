@@ -27,7 +27,7 @@ res.cookie("refreshToken", refreshToken, {
     sendResponse(res, {
       success: true,
       statusCode: httpStatus.OK,
-      message: "User logged in success fully!",
+      message: "User logged in successfully!",
       data: {
         accessToken,
         refreshToken,

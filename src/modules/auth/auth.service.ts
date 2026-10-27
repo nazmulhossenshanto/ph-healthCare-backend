@@ -17,6 +17,9 @@ const loginUserIntoDB = async (payload: ILoginUser) => {
   if (!isPasswordMatched) {
     throw new Error("Invalid password or credentials!");
   }
+   if (user.activeStatus === "BLOCKED") {
+     throw new Error("User is blocked! Please contact to the support.");
+   }
   const jwtPayload = {
     id: user.id,
     name: user.name,
@@ -36,6 +39,8 @@ const loginUserIntoDB = async (payload: ILoginUser) => {
 
   return {  accessToken, refreshToken };
 };
+
+ 
 
 export const authService = {
   loginUserIntoDB,
